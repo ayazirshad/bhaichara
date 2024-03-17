@@ -1,0 +1,47 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.crop-container {
+  position: fixed;
+  top: 80px;
+  left: 300px;
+  right: 300px;
+  bottom: 80px;
+}
+.controls {
+  position: fixed;
+  bottom: 0;
+  height: 80px;
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .crop-container {
+    position: fixed;
+    top: 80px;
+    left: 0px;
+    right: 0px;
+    bottom: 80px;
+  }
+}
+@media (min-width: 601px) and (max-width: 767px) {
+  .crop-container {
+    position: fixed;
+    top: 80px;
+    left: 80px;
+    right: 80px;
+    bottom: 80px;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .crop-container {
+    position: fixed;
+    top: 80px;
+    left: 200px;
+    right: 200px;
+    bottom: 80px;
+  }
+}
