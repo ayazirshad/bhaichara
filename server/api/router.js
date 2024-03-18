@@ -48,11 +48,13 @@ const upload = multer({ storage, limits });
 router.post("/post/create", upload.single("image"), async (req, res) => {
   try {
     const { user, image, caption } = req.body;
+    console.log("create request");
     cloudinary.config({
       cloud_name: "do4b8wctw",
       api_key: "565196955737653",
       api_secret: "ngoKYorc2Vd1hY-0FQzbgQc5Tbs",
     });
+    console.log("cloudinary request done");
     const result = await cloudinary.uploader.upload(image, {
       use_filename: true,
       folder: "instaClone",
