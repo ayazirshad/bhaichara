@@ -50,7 +50,7 @@ const App = () => {
     <div className="sm:flex w-full">
       {isAuthenticated ? (
         <>
-          <div className="bg-red-300 hidden sm:block">
+          <div className="hidden sm:block">
             <SideMenu
               logInUser={logInUser}
               setIsAuthenticated={setIsAuthenticated}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { GoHome, GoHomeFill } from "react-icons/go";
 import { IoSearch } from "react-icons/io5";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
