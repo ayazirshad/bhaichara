@@ -9,12 +9,7 @@ const auth = async (req, res, next) => {
       token,
       "mynameisayazirshadmynameisayazirshad"
     );
-    console.log("verified");
-    console.log("verifiedUser", verifiedUser);
-    console.log("verifiedUser id", verifiedUser._id);
     const user = await User.findById(verifiedUser._id);
-    console.log("user found", user);
-    // console.log(user);
     req.token = token;
     req.user = user;
     console.log("going to next");

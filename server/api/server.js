@@ -7,7 +7,6 @@ var cookieParser = require("cookie-parser");
 const port = process.env.PORT || 5000;
 require("../db/connection");
 
-// app.use(express.json({ limit: "10mb" }));
 app.use(bodyParser.json({ limit: "100mb" }));
 app.use(cookieParser());
 app.use(cors({ allowedHeaders: "*", credentials: true }));
