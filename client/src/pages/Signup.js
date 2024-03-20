@@ -11,8 +11,6 @@ const Signup = () => {
   const [emailTouched, setEmailTouched] = useState(false);
   const [userNameTouched, setUserNameTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  //   console.log("emailPresent", emailPresent);
-  //   console.log("userNamePresent", userNamePresent);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
@@ -40,7 +38,6 @@ const Signup = () => {
       setEmailTouched(true);
     } else {
       setEmailTouched(false);
-      //   setEmailPresent(null);
     }
   };
   const checkUserName = (userName) => {
@@ -51,7 +48,6 @@ const Signup = () => {
         : setuserNamePresent(false);
       setUserNameTouched(true);
     } else {
-      //   setuserNamePresent(null);
       setUserNameTouched(false);
     }
   };
@@ -80,8 +76,6 @@ const Signup = () => {
       setPassword("");
       navigate("/login");
     }
-    // console.log(user);
-    // console.log("data", data);
   };
 
   return (

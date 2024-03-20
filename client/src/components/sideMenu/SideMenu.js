@@ -4,7 +4,6 @@ import { IoSearch } from "react-icons/io5";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { RiMessengerLine, RiMessengerFill } from "react-icons/ri";
 import { TiSocialInstagram } from "react-icons/ti";
-// import { FiPlusCircle } from "react-icons/fi";
 import { HiOutlinePlusCircle, HiMiniPlusCircle } from "react-icons/hi2";
 import { RiMenu3Fill } from "react-icons/ri";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -13,7 +12,6 @@ const SideMenu = ({ logInUser, setIsAuthenticated }) => {
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  // console.log(first)
   const loggedInUSer = logInUser;
 
   const logout = async () => {
@@ -30,22 +28,7 @@ const SideMenu = ({ logInUser, setIsAuthenticated }) => {
       navigate("/login");
     }
   };
-  // console.log("loggedInUSer.profilePicture", loggedInUSer?.profilePicture);
-  // const userName = "ali";
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetch(`/user/${userName}`, {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "aplication/json",
-  //       },
-  //     });
-  //     const data = await response.json();
-  //     // console.log(data)
-  //     setLoggedInUSer(data);
-  //   };
-  //   fetchData();
-  // }, []);
+
   const navItems = [
     {
       name: "Home",
@@ -96,23 +79,30 @@ const SideMenu = ({ logInUser, setIsAuthenticated }) => {
         <div className="lg:hidden">
           <TiSocialInstagram size={25} color="purple" className="mb-1" />
         </div>
-        <h1 className="font-bold text-lg hidden lg:block">BhaiChara</h1>
+        <Link
+          className="font-bold font-insta text-3xl text-[#0c0c0c] hidden lg:block"
+          to={"/"}
+        >
+          BhaiChara
+        </Link>
       </div>
       <nav className="flex flex-col gap-3">
         {navItems.map((item, index) => {
           return (
             <Link
-              className={`p-[10px] flex gap-3 items-center w-full hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md hover:font-semibold `}
+              className={`px-2 h-12 flex gap-3 items-center w-full hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md hover:font-semibold`}
               key={index}
               to={item.path}
             >
               <div
-                className={` ${item.name === "Search" ? "font-semibold" : ""}`}
+                className={` h-full aspect-[9/16] flex justify-center items-center ${
+                  item.name === "Search" ? "font-semibold" : ""
+                }`}
               >
                 {item.icon}
               </div>
               <h1
-                className={`text-[16px] hidden lg:block ${
+                className={`text-[16px]  hidden lg:block ${
                   location.pathname === item.path ? "font-semibold" : ""
                 }`}
               >
@@ -121,36 +111,23 @@ const SideMenu = ({ logInUser, setIsAuthenticated }) => {
             </Link>
           );
         })}
-        {/* <div className="p-2 flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md">
-          <GoHome size={25} />
-          <h1 className="text-[16px]">Home</h1>
-        </div>
-        <div className="p-2 flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md">
-          <IoSearch size={25} />
-          <h1 className="text-[16px]">Search</h1>
-        </div>
-        <div className="p-2 flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md">
-          <FaRegHeart size={22} />
-          <h1 className="text-[16px]">Notifications</h1>
-        </div>
-        <div className="p-2 flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md">
-          <RiMessengerLine size={25} />
-          <h1 className="text-[16px]">Messages</h1>
-        </div>
-        <div className="p-2 flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md">
-          <FiPlusCircle size={24} />
-          <h1 className="text-[16px]">Create</h1>
-        </div> */}
+
         <Link
-          className="p-[10px] flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md"
+          className="px-2 h-12 flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md"
           to={"/profile"}
         >
-          <div className="overflow-hidden rounded-full">
-            <img
-              src={loggedInUSer?.profilePicture}
-              alt="img"
-              className="w-6 h-6"
-            />
+          <div className=" h-full aspect-[9/16] flex justify-center items-center">
+            <div
+              className={`overflow-hidden rounded-full ${
+                location.pathname === "/profile" && "border border-black"
+              }`}
+            >
+              <img
+                src={loggedInUSer?.profilePicture}
+                alt="img"
+                className="w-6 h-6"
+              />
+            </div>
           </div>
           <h1
             className={`text-[16px] hover:font-semibold hidden lg:block ${

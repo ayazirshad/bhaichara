@@ -2,32 +2,17 @@ import React, { useEffect, useState } from "react";
 import { BsGrid } from "react-icons/bs";
 import { RiMessengerLine } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
-// import { RxCross2 } from "react-icons/rx";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 const Account = ({ logInUser }) => {
   const navigate = useNavigate();
-  // const logInUser = {
-  //   username: "ali",
-  //   _id: "65c44c79ac67152520d0897b",
-  // };
-  // const logInUserId = "65c44c79ac67152520d0897b";
   const [loggedInUser, setLoggedInUser] = useState(logInUser);
-  // const userId = loggedInUser._id;
   const params = useParams();
   const [userName, setUserName] = useState(params.userName);
-  // console.log("userName", userName);
   const [user, setUser] = useState();
-  // console.log("user", user);
-  // const [followed, setFollowed] = useState();
   const [isFollowersPageOpen, setIsFollowersPageOpen] = useState(false);
   const [isFollowingPageOpen, setIsFollowingPageOpen] = useState(false);
-  // loggedInUser &&
-  // user &&
-  // loggedInUser.following.some((item) => item._id === user._id)
-  // console.log("user", user);
   const [posts, setPosts] = useState();
-  // console.log("posts", posts);
 
   useEffect(() => {
     if (loggedInUser) {
@@ -42,34 +27,14 @@ const Account = ({ logInUser }) => {
           },
         });
         const data = await response.json();
-        // console.log("data", data);
         setUser(data);
         setPosts(data.posts);
       };
       fetchData();
     }
-
-    // console.log("use effect running");
-
-    // const fetchLogInUser = async () => {
-    //   const response = await fetch(`/user/${logInUserId}/userId`, {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
-    //   const data = await response.json();
-    //   //   console.log("data", data);
-    //   setLoggedInUser(data);
-    // };
-
-    // fetchLogInUser();
   }, [userName, navigate, loggedInUser]);
 
   const handleFollow = async (item) => {
-    // console.log("user", user);
-    // console.log("loggedInUser", loggedInUser);
-    // console.log("loggedInUser._id", loggedInUser._id);
     const response = await fetch(`/user/${loggedInUser?._id}/follow`, {
       method: "PUT",
       headers: {
@@ -78,7 +43,6 @@ const Account = ({ logInUser }) => {
       body: JSON.stringify({ userToBeFollowed: `${item._id}` }),
     });
     const data = await response.json();
-    // console.log("follow data", data);
     if (response.status === 200) {
       if (item._id !== user._id) {
         await fetch(`/user/${userName}`, {
@@ -94,14 +58,10 @@ const Account = ({ logInUser }) => {
       }
 
       setLoggedInUser(data.followingUser);
-      // setFollowed(true);
     }
   };
 
   const handleUnfollow = async (item) => {
-    // console.log("user", user);
-    // console.log("loggedInUser", loggedInUser);
-    // console.log("loggedInUser._id", loggedInUser._id);
     const response = await fetch(`/user/${loggedInUser?._id}/unfollow`, {
       method: "PUT",
       headers: {
@@ -110,11 +70,7 @@ const Account = ({ logInUser }) => {
       body: JSON.stringify({ userToBeUnfollowed: `${item._id}` }),
     });
     const data = await response.json();
-    // console.log("unfollow data", data);
     if (response.status === 200) {
-      // setFollowed(false);
-      // console.log("data.unFollowedUser", data.unFollowedUser);
-      // console.log("data.unFollowingUser", data.unFollowingUser);
       if (item._id !== user._id) {
         await fetch(`/user/${userName}`, {
           method: "GET",
@@ -128,7 +84,6 @@ const Account = ({ logInUser }) => {
         setUser(data.unFollowedUser);
       }
       setLoggedInUser(data.unFollowingUser);
-      // setFollowed(false);
     }
   };
 
@@ -310,7 +265,6 @@ const Account = ({ logInUser }) => {
                           </button>
                         ))}
                     </div>
-                    // <div key={index}>{item.username}</div>
                   );
                 })
               ) : (
@@ -388,7 +342,6 @@ const Account = ({ logInUser }) => {
                           </button>
                         ))}
                     </div>
-                    // <div key={index}>{item.username}</div>
                   );
                 })
               ) : (
@@ -401,7 +354,6 @@ const Account = ({ logInUser }) => {
         </div>
       </div>
     </div>
-    // <div>account {userName}</div>
   );
 };
 

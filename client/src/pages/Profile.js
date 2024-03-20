@@ -2,21 +2,16 @@ import React, { useEffect, useState } from "react";
 import { BsGrid } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { Link } from "react-router-dom";
-import Post from "../components/post/Post";
 
 const Profile = ({ logInUser }) => {
   const [posts, setPosts] = useState([]);
   const [isFollowersPageOpen, setIsFollowersPageOpen] = useState(false);
   const [isFollowingPageOpen, setIsFollowingPageOpen] = useState(false);
-  const [removed, setRemoved] = useState(false);
   const [followedUser, setFollowedUser] = useState();
   const [unfollowedUser, setUnfollowedUser] = useState();
   const loggedInUser = logInUser._id;
 
-  // console.log("posts", posts);
-  const userName = "ali";
   const [user, setUser] = useState();
-  // console.log("user", user);
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`/user/${loggedInUser}/userId`, {
@@ -37,15 +32,13 @@ const Profile = ({ logInUser }) => {
         },
       });
       const data = await response.json();
-      //   console.log("data", data);
       setPosts(data.posts.reverse());
     };
     fetchData();
     fetchPosts();
-  }, []);
+  }, [loggedInUser]);
 
   const handleUnfollow = async (user) => {
-    // console.log("user", user);
     const response = await fetch(`/user/${loggedInUser}/unfollow`, {
       method: "PUT",
       headers: {
@@ -54,17 +47,12 @@ const Profile = ({ logInUser }) => {
       body: JSON.stringify({ userToBeUnfollowed: `${user._id}` }),
     });
     const data = await response.json();
-    // console.log("unfollow data", data);
     if (response.status === 200) {
-      // setFollowed(false);
-      // setUser(data.unFollowedUser);
       setUser(data.unFollowingUser);
-      // setFollowed(true);
     }
   };
 
   const handleFollow = async (user) => {
-    // console.log("user", user);
     const response = await fetch(`/user/${loggedInUser}/follow`, {
       method: "PUT",
       headers: {
@@ -73,9 +61,7 @@ const Profile = ({ logInUser }) => {
       body: JSON.stringify({ userToBeFollowed: `${user._id}` }),
     });
     const data = await response.json();
-    // console.log("follow data", data);
     if (response.status === 200) {
-      // setFollowed(true);
       setFollowedUser(data.followedUser);
       setUser(data.followingUser);
     }
@@ -92,17 +78,12 @@ const Profile = ({ logInUser }) => {
       body: JSON.stringify({ userToBeUnfollowed: `${loggedInUser}` }),
     });
     const data = await response.json();
-    // console.log("unfollow data", data);
     if (response.status === 200) {
-      // setFollowed(false);
       setUser(data.unFollowedUser);
-      // setUser(data.unFollowingUser);
-      setRemoved(true);
     }
   };
 
   return (
-    // <div className="w-full flex justify-center h-screen overflow-y-auto">
     <div className="flex items-center flex-col w-full relative pb-20">
       {user ? (
         <>
@@ -197,7 +178,7 @@ const Profile = ({ logInUser }) => {
       )}
 
       <div
-        className={`absolute h-screen w-full backdrop-blur-md bg-opacity-5 transition-all duration-300 bg-black ${
+        className={`absolute  h-screen w-full backdrop-blur-md bg-opacity-5 transition-all duration-300 bg-black ${
           isFollowersPageOpen ? "block" : "hidden"
         }`}
       >
@@ -229,20 +210,13 @@ const Profile = ({ logInUser }) => {
                           {item.username}
                         </Link>
                       </div>
-                      {/* {removed && user && user._id === item._id ? (
-                        <button className="bg-[#0095F6] text-[#fff] hover:bg-[#0073f6] font-semibold text-xs rounded-md py-[6px] px-3">
-                          Removed
-                        </button>
-                      ) : ( */}
                       <button
                         className="bg-gray-100  hover:bg-gray-200 font-semibold text-xs rounded-md py-[6px] px-3"
                         onClick={() => handleRemove(item)}
                       >
                         Remove
                       </button>
-                      {/* )} */}
                     </div>
-                    // <div key={index}>{item.username}</div>
                   );
                 })
               ) : (
@@ -310,7 +284,6 @@ const Profile = ({ logInUser }) => {
                         )
                       }
                     </div>
-                    // <div key={index}>{item.username}</div>
                   );
                 })
               ) : (
@@ -323,7 +296,6 @@ const Profile = ({ logInUser }) => {
         </div>
       </div>
     </div>
-    // </div>
   );
 };
 

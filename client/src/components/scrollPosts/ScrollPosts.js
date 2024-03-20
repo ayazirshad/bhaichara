@@ -11,13 +11,12 @@ const ScrollPosts = ({ logInUser }) => {
         headers: { "Content-Type": "application/json" },
       });
       const data = await response.json();
-      // console.log(data);
       setPosts(data.posts);
     };
     fetchPosts();
   }, []);
   return (
-    <div>
+    <div className="pb-20">
       {posts.length > 0 ? (
         <div>
           {posts.map((item, index) => {

@@ -3,7 +3,6 @@ import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import { GoHome, GoHomeFill } from "react-icons/go";
 import { HiMiniPlusCircle, HiOutlinePlusCircle } from "react-icons/hi2";
 import { IoSearch } from "react-icons/io5";
-import { RiMessengerFill, RiMessengerLine } from "react-icons/ri";
 import { Link, useLocation } from "react-router-dom";
 
 const BottomBar = ({ logInUser, setIsAuthenticated }) => {
@@ -19,7 +18,11 @@ const BottomBar = ({ logInUser, setIsAuthenticated }) => {
           <GoHome size={25} />
         ),
     },
-    { name: "Search", path: "/search", icon: <IoSearch size={25} /> },
+    {
+      name: "Search",
+      path: "/search",
+      icon: <IoSearch size={25} />,
+    },
     {
       name: "Create",
       path: "/create",
@@ -43,13 +46,11 @@ const BottomBar = ({ logInUser, setIsAuthenticated }) => {
     },
   ];
   return (
-    <div className="bg-[#fff] w-full flex justify-between py-5 px-3 bottom-0">
+    <div className="bg-[#fff] w-full flex justify-around py-3 bottom-0">
       {navItems.map((item, index) => {
         return (
           <Link
-            className={` items-center flex justify-center  hover:bg-gray-100 transition-all duration-200 cursor-pointer rounded-md hover:font-semibold ${
-              item.name === "Search" ? "font-semibold" : ""
-            }`}
+            className={`items-center flex justify-center  sm:hover:bg-gray-100 transition-all duration-200 cursor-pointer  hover:font-semibold `}
             key={index}
             to={item.path}
           >
@@ -58,7 +59,9 @@ const BottomBar = ({ logInUser, setIsAuthenticated }) => {
         );
       })}
       <Link
-        className=" flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer overflow-hidden rounded-full w-7 h-7"
+        className={` flex gap-3 items-center hover:bg-gray-100 transition-all duration-200 cursor-pointer overflow-hidden rounded-full w-7 h-7 ${
+          location.pathname === "/profile" && "border border-black"
+        }`}
         to={"/profile"}
       >
         <img

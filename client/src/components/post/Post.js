@@ -5,6 +5,7 @@ import { FaRegComment, FaHeart } from "react-icons/fa";
 import { PiPaperPlaneTiltBold } from "react-icons/pi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Comment from "./Comment";
+import { IoMdCrop } from "react-icons/io";
 
 const Post = ({ item, logInUser }) => {
   const location = useLocation();
@@ -19,6 +20,7 @@ const Post = ({ item, logInUser }) => {
   const [post, setPost] = useState(item);
   const [commentText, setCommentText] = useState("");
   const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
+  const [isShowLikesOpen, setisShowLikesOpen] = useState(false);
   // console.log("post", item);
 
   useEffect(() => {
@@ -154,8 +156,8 @@ const Post = ({ item, logInUser }) => {
   return (
     <div className="bg-[#fff]">
       {post ? (
-        <div className="py-3 border-b border-b-gray-300 mb-3 ">
-          <div className="relative flex justify-between items-center py-2 px-1">
+        <div className="relative py-3 border-b border-b-gray-300 mb-3 ">
+          <div className="relative flex justify-between items-center py-2 pr-1 pl-[10px]">
             <div className="flex gap-2 items-center">
               <div className="w-9 h-9 object-contain rounded-full overflow-hidden border">
                 <img src={post.user?.profilePicture} alt="img" />
@@ -181,11 +183,11 @@ const Post = ({ item, logInUser }) => {
               </button>
             </div>
             {isDeleteMenuOpen && (
-              <div className="absolute text-[13px] bg-[#fff] border shadow-xl top-10 right-5 p-1 rounded-md flex flex-col gap-1">
+              <div className="absolute text-[13px] bg-[#fff] border shadow-xl top-10 right-5 py-[6px] rounded-md flex flex-col">
                 {post?.user?._id === loggedInUser?._id &&
                   location.pathname.startsWith("/post/") && (
                     <button
-                      className="py-1 px-3 rounded-sm text-red-500 hover:bg-gray-200 transition-all duration-100"
+                      className="py-2 px-10 text-red-500 hover:bg-gray-200 transition-all duration-100"
                       onClick={handleDeletePost}
                     >
                       Delete
@@ -193,14 +195,14 @@ const Post = ({ item, logInUser }) => {
                   )}
                 {location.pathname === "/" && (
                   <Link
-                    className="py-1 px-3 rounded-sm hover:bg-gray-200 transition-all duration-100"
+                    className="py-2 px-10  hover:bg-gray-200 transition-all duration-100"
                     to={`/post/${post._id}`}
                   >
                     Go to post
                   </Link>
                 )}
                 <button
-                  className="py-1 px-3 rounded-sm hover:bg-gray-200 transition-all duration-100"
+                  className="py-2 px-10 hover:bg-gray-200 transition-all duration-100"
                   onClick={() => copyLink(post._id)}
                 >
                   Copy link
@@ -235,10 +237,13 @@ const Post = ({ item, logInUser }) => {
               <PiPaperPlaneTiltBold size={21} title="Share" />
             </button>
           </div>
-          <div className="flex gap-1 text-[13px] px-3 font-semibold">
+          <button
+            className="flex gap-1 text-[13px] px-3 font-semibold"
+            onClick={() => setisShowLikesOpen(!isShowLikesOpen)}
+          >
             <p>{post.likes.length}</p>
             <h4> likes</h4>
-          </div>
+          </button>
           <div className="flex gap-1 text-[13px] px-3 py-[2px]">
             <p>
               <strong className="font-semibold">{post.user.username}</strong>
@@ -293,6 +298,37 @@ const Post = ({ item, logInUser }) => {
               </button>
             )}
           </div>
+          {post.likes.length > 0 && isShowLikesOpen && (
+            <div className="w-full h-screen bg-black  flex-col bg-opacity-10 backdrop-blur-md z-30 top-0 fixed flex justify-center items-center">
+              <div className="text-right text-white">
+                <button onClick={() => setisShowLikesOpen(!isShowLikesOpen)}>
+                  close
+                </button>
+              </div>
+              <div className="bg-[#fff] w-64 p-3 rounded-md">
+                {post.likes.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center w-full "
+                    >
+                      <div className="flex gap-2 items-center my-1">
+                        <div className="w-11 h-11 object-contain rounded-full overflow-hidden border">
+                          <img src={item.profilePicture} alt="img" />
+                        </div>
+                        <Link
+                          className="font-semibold"
+                          to={`/account/${item.username}`}
+                        >
+                          {item.username}
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="w-[430px] h-[430px]">loading...</div>

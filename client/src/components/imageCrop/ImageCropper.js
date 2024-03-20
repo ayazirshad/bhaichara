@@ -9,7 +9,6 @@ const ImageCropper = ({
   setCroppedImage,
   setIsImageCropperOn,
 }) => {
-  //   console.log("image", image);
   const [zoom, setZoom] = useState(1);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const aspect = { value: 1 / 1 };
@@ -35,12 +34,10 @@ const ImageCropper = ({
     if (croppedImage) {
       reader.readAsDataURL(croppedImage);
     }
-    // setCroppedImage(croppedImage);
-    // console.log("croppedImage", croppedImage);
   };
 
   return (
-    <div>
+    <div className="z-30">
       <div className="backdrop"></div>
       <div className="crop-container bg-gray-600">
         <Cropper

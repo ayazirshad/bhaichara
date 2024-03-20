@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import SideMenu from "./components/sideMenu/SideMenu";
-import { Routes, Route, useNavigate } from "react-router-dom";
 import Account from "./pages/Account";
 import Search from "./pages/Search";
 import Notifications from "./pages/Notifications";
 import Messenger from "./pages/Messenger";
 import Create from "./pages/Create";
 import Profile from "./pages/Profile";
-import "./App.css";
 import PersonalPost from "./pages/PersonalPost";
 import EditProfile from "./pages/EditProfile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import BottomBar from "./components/bottomBar/BottomBar";
+import "./App.css";
 
 const App = () => {
   const navigate = useNavigate();
   const [logInUser, setLogInUser] = useState();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // console.log("loggedInUser", logInUser);
-  // console.log("isAuthenticated", isAuthenticated);
 
   useEffect(() => {
     console.log("app use effect running");
@@ -34,7 +31,6 @@ const App = () => {
         credentials: "include",
       });
       const data = await res.json();
-      // console.log("data", data);
       if (res.status === 200) {
         setLogInUser(data.user);
         setIsAuthenticated(data.authenticated);
@@ -80,7 +76,7 @@ const App = () => {
               element={<Account logInUser={logInUser} />}
             />
           </Routes>
-          <div className="sm:hidden fixed bottom-0 z-50 w-full">
+          <div className="sm:hidden fixed bottom-0 z-20 w-full">
             <BottomBar
               logInUser={logInUser}
               setIsAuthenticated={setIsAuthenticated}

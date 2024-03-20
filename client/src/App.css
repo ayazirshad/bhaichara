@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "instagram-new";
+  src: url("../fonts/instagram-new/Demo_Fonts/Fontspring-DEMO-blue_vinyl_regular_ps_ot.otf");
+}
+
 ::-webkit-scrollbar {
   width: 7px;
 }

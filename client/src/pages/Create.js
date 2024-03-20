@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import ImageCropper from "../components/imageCrop/ImageCropper";
 import { useNavigate } from "react-router-dom";
 import { FaRegImage } from "react-icons/fa6";
-import { MdEdit } from "react-icons/md";
 
 const Create = ({ logInUser }) => {
   const navigate = useNavigate();
@@ -12,10 +11,7 @@ const Create = ({ logInUser }) => {
   const [tempImage, setTempImage] = useState("");
   const [croppedImage, setCroppedImage] = useState("");
   const [isImageCropperOn, setIsImageCropperOn] = useState(false);
-  // console.log("caption", caption);
-  // console.log("croppedimage", croppedImage);
   const formData = new FormData();
-  // console.log("image", image);
 
   const uploadPost = async () => {
     if (image !== "" || croppedImage !== "") {
@@ -39,7 +35,6 @@ const Create = ({ logInUser }) => {
     } else {
       alert("no image selected");
     }
-    // console.log("create data", data);
   };
 
   const handleFileSelect = async (e) => {
@@ -69,7 +64,7 @@ const Create = ({ logInUser }) => {
   };
 
   return (
-    <div className="w-full flex justify-center items-center ">
+    <div className="w-full flex justify-center items-center mb-32">
       {(image !== "" || isImageCropperOn) && (
         <ImageCropper
           image={tempImage}
@@ -78,48 +73,37 @@ const Create = ({ logInUser }) => {
           setIsImageCropperOn={setIsImageCropperOn}
         />
       )}
-      <div>
-        <div className=" p-5 flex  gap-5">
-          <div>
-            {/* <label htmlFor="caption">Caption</label> */}
+      <div className=" w-full flex justify-center items-center flex-col p-5">
+        <div className=" w-full flex justify-center items-center flex-col">
+          <div className="w-full">
             <input
               type="text"
-              className="px-3 text-sm w-full py-2 mb-4 rounded-full outline-none border focus:border-blue-500 bg-gray-100 border-[#fff]"
+              className="px-3 text-sm w-full py-2 mb-4  outline-none border-b focus:border-b-blue-500  border-b-[#d9d9d9]"
               placeholder="caption"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
             />
           </div>
-          {/* <div>
-            <label htmlFor="">
-              <FaRegImage />
-            </label>
-            <input
-              type="file"
-              accept=".jpg, .jpeg, .png"
-              onChange={(e) => handleFileSelect(e)}
-            />
-          </div> */}
           {image !== "" || croppedImage !== "" ? (
             <>
-              <div className="w-56 h-56">
+              <div className="aspect-square w-full sm:w-56 sm:h-56">
                 <img
                   className="w-full h-full"
                   src={croppedImage !== "" ? croppedImage : image}
                   alt="postImage"
                 />
               </div>
-              <div>
+              <div className="text-center mt-2">
                 <button
-                  className="px-3 py-1 rounded-md bg-blue-300"
+                  className="py-2 px-8 rounded-md bg-blue-300 hover:bg-blue-400 transition-all duration-200 text-sm "
                   onClick={() => setIsImageCropperOn(true)}
                 >
-                  Crop
+                  Crop again
                 </button>
               </div>
             </>
           ) : (
-            <div className="w-56 h-56 bg-gray-200">
+            <div className="aspect-square w-full sm:w-56 sm:h-56 bg-gray-200">
               <input
                 type="file"
                 accept="image/*"
@@ -137,12 +121,16 @@ const Create = ({ logInUser }) => {
             </div>
           )}
         </div>
-        <button
-          className="bg-blue-300 p-3 rounded-md hover:bg-blue-400 transition-all duration-300"
-          onClick={uploadPost}
-        >
-          {loading ? "posting..." : "Post"}
-        </button>
+        {(image !== "" || croppedImage !== "") && (
+          <div className="text-center mt-3">
+            <button
+              className="bg-blue-300 py-2 px-8 rounded-md hover:bg-blue-400 transition-all font-semibold duration-200"
+              onClick={uploadPost}
+            >
+              {loading ? "posting..." : "Post"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

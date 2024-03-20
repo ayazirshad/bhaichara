@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Search = ({ logInUser }) => {
-  console.log("logInUser", logInUser);
-  // const logInUserId = logInUser._id;
   const [loggedInUser, setLoggedInUser] = useState(logInUser);
   const [users, setUsers] = useState([]);
   const [fetchedUsers, setFetchedUsers] = useState([]);
@@ -12,23 +10,15 @@ const Search = ({ logInUser }) => {
   const [userChanged, setUserChanged] = useState({});
 
   useEffect(() => {
-    // const fetchLogInUser = async () => {
-    //   const res = await fetch(`/user/${logInUserId}/userId`);
-    //   const data = await res.json();
-    //   setLoggedInUser(data);
-    // };
     const fetchUsers = async () => {
       const res = await fetch("/user");
       const data = await res.json();
-      // console.log(data);
       setFetchedUsers(data);
     };
-    // fetchLogInUser();
     fetchUsers();
   }, []);
 
   const filterUsers = (searchValue) => {
-    // console.log("function called", searchValue);
     const filteredUsers = fetchedUsers?.filter((item) =>
       item.username.includes(searchValue)
     );
@@ -42,7 +32,6 @@ const Search = ({ logInUser }) => {
   };
 
   const handleFollow = async (user) => {
-    // console.log("user", user);
     const response = await fetch(`/user/${loggedInUser?._id}/follow`, {
       method: "PUT",
       headers: {
@@ -60,7 +49,6 @@ const Search = ({ logInUser }) => {
   };
 
   const handleUnfollow = async (user) => {
-    // console.log("user", user);
     const response = await fetch(`/user/${loggedInUser?._id}/unfollow`, {
       method: "PUT",
       headers: {
@@ -84,17 +72,11 @@ const Search = ({ logInUser }) => {
           type="text"
           className="px-3  py-2 mb-5 rounded-full outline-none border focus:border-blue-500 bg-gray-100 border-[#fff]"
           placeholder="Search users"
-          // required
-          // value={e.target.value}
           onChange={(e) => filterUsers(e.target.value)}
         />
 
         {users.length > 0 ? (
           users.map((item, index) => {
-            // console.log(
-            //   "loggedInUser?.following.some((id) => id === item._id)",
-            //   loggedInUser?.following.some((user) => user._id === item._id)
-            // );
             return (
               <div className="flex justify-between items-center" key={index}>
                 <div className="flex gap-2 items-center">

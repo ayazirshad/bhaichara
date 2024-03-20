@@ -4,7 +4,6 @@ import { MdDeleteOutline } from "react-icons/md";
 
 const Comment = ({ commentId, handleDeleteComment, logInUser }) => {
   const logInUserId = logInUser._id;
-  // console.log("comment id", commentId);
   const [comment, setComment] = useState();
 
   useEffect(() => {
@@ -17,7 +16,6 @@ const Comment = ({ commentId, handleDeleteComment, logInUser }) => {
           },
         });
         const data = await res.json();
-        // console.log("comment", data);
         setComment(data);
       };
       fetchComment();
@@ -55,7 +53,6 @@ const Comment = ({ commentId, handleDeleteComment, logInUser }) => {
         <div className="text-[13px]">loading...</div>
       )}
     </div>
-    // <div>comment</div>
   );
 };
 

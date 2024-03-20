@@ -2,18 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Suggestions = ({ logInUser }) => {
-  console.log("logInUser suggestion", logInUser);
   const userName = logInUser?.username;
   const [users, setUsers] = useState([]);
-  // const loggedInUser = "65c44c79ac67152520d0897b";
-  // const [loggedInUser, setLoggedInUser] = useState();
   const [followed, setFollowed] = useState(false);
   const [suggestedUser, setSuggestedUser] = useState();
 
   useEffect(() => {
     if (logInUser) {
       const fetchData = async () => {
-        // const response = await fetch({`/user/${userName}/suggestions`},)
         const response = await fetch(`/user/${userName}/suggestions`, {
           method: "GET",
           headers: {
@@ -21,7 +17,6 @@ const Suggestions = ({ logInUser }) => {
           },
         });
         const data = await response.json();
-        //   console.log("suggestedUsers", data.suggestedUsers);
         setUsers(data.suggestedUsers);
       };
       fetchData();
@@ -29,7 +24,6 @@ const Suggestions = ({ logInUser }) => {
   }, [logInUser, userName]);
 
   const handleFollow = async (user) => {
-    // console.log("user", user);
     const response = await fetch(`/user/${logInUser._id}/follow`, {
       method: "PUT",
       headers: {
@@ -38,17 +32,13 @@ const Suggestions = ({ logInUser }) => {
       body: JSON.stringify({ userToBeFollowed: `${user._id}` }),
     });
     const data = await response.json();
-    // console.log("follow data", data);
     if (response.status === 200) {
-      // setFollowed(true);
       setSuggestedUser(data.followedUser);
-      // setUserName(data.followingUser.username);
       setFollowed(true);
     }
   };
 
   const handleUnfollow = async (user) => {
-    // console.log("user", user);
     const response = await fetch(`/user/${logInUser._id}/unfollow`, {
       method: "PUT",
       headers: {
@@ -57,11 +47,8 @@ const Suggestions = ({ logInUser }) => {
       body: JSON.stringify({ userToBeUnfollowed: `${user._id}` }),
     });
     const data = await response.json();
-    // console.log("unfollow data", data);
     if (response.status === 200) {
-      // setFollowed(false);
       setSuggestedUser(data.unFollowedUser);
-      // setLoggedInUser(data.unFollowingUser);
       setFollowed(false);
     }
   };
