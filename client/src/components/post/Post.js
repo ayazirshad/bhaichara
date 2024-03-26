@@ -5,23 +5,20 @@ import { FaRegComment, FaHeart } from "react-icons/fa";
 import { PiPaperPlaneTiltBold } from "react-icons/pi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Comment from "./Comment";
-import { IoMdCrop } from "react-icons/io";
 
 const Post = ({ item, logInUser }) => {
   const location = useLocation();
   const inputRef = useRef(null);
-  // console.log("location.pathname", );
   const navigate = useNavigate();
   const logInUserId = logInUser?._id;
   const [loggedInUser, setLoggedInUser] = useState();
-  const userId = loggedInUser && loggedInUser._id;
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [post, setPost] = useState(item);
   const [commentText, setCommentText] = useState("");
   const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
   const [isShowLikesOpen, setisShowLikesOpen] = useState(false);
-  // console.log("post", item);
+  const userId = loggedInUser && loggedInUser._id;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -38,7 +35,6 @@ const Post = ({ item, logInUser }) => {
   }, [logInUserId]);
 
   const likePost = async () => {
-    // console.log("like function", post._id, userId);
     const response = await fetch(`/post/${post._id}/like`, {
       method: "PUT",
       headers: {
@@ -52,7 +48,6 @@ const Post = ({ item, logInUser }) => {
   };
 
   const unLikePost = async () => {
-    // console.log("unlike function", post._id, userId);
     const response = await fetch(`/post/${post._id}/unlike`, {
       method: "PUT",
       headers: {
@@ -61,7 +56,6 @@ const Post = ({ item, logInUser }) => {
       body: JSON.stringify({ userId }),
     });
     const data = await response.json();
-    // console.log("unliked post", data);
     setPost(data);
     setLiked(false);
   };
@@ -72,8 +66,6 @@ const Post = ({ item, logInUser }) => {
       text: commentText,
       createdAt: new Date(),
     };
-    // console.log("newComment", newComment);
-    // console.log(post._id);
 
     const res = await fetch(`/post/${post?._id}/comment`, {
       method: "PUT",
@@ -83,7 +75,6 @@ const Post = ({ item, logInUser }) => {
     const data = await res.json();
     setPost(data);
     setCommentText("");
-    // console.log("data", data);
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -97,10 +88,8 @@ const Post = ({ item, logInUser }) => {
       },
       body: JSON.stringify(id),
     });
-    // console.log("res", res);
     const data = await res.json();
     setPost(data);
-    // console.log("handleDeleteComment", data);
   };
 
   const handleDeletePost = async () => {
@@ -110,8 +99,6 @@ const Post = ({ item, logInUser }) => {
         "Content-Type": "application/json",
       },
     });
-    // const data = await res.json();
-    // console.log(data);
     if (res.status === 201) {
       setIsDeleteMenuOpen(!isDeleteMenuOpen);
       navigate("/profile");
@@ -134,24 +121,6 @@ const Post = ({ item, logInUser }) => {
       inputRef.current.focus();
     }
   };
-
-  // const handleShare = async () => {
-  //   if (navigator.share) {
-  //     try {
-  //       await navigator.share({
-  //         title: "Facebook",
-  //         text: "open facebook",
-  //         url: "https://facebook.com",
-  //       });
-  //       console.log("Successfully shared");
-  //     } catch (error) {
-  //       console.error("Error sharing:", error);
-  //     }
-  //   } else {
-  //     console.log("Web Share API not supported on this browser");
-  //     // Handle fallback behavior, e.g., show a custom share dialog
-  //   }
-  // };
 
   return (
     <div className="bg-[#fff]">
