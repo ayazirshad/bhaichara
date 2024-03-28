@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { BsGrid } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
 
-const Profile = ({ logInUser }) => {
+const Profile = ({ logInUser, setIsAuthenticated }) => {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
   const [isFollowersPageOpen, setIsFollowersPageOpen] = useState(false);
   const [isFollowingPageOpen, setIsFollowingPageOpen] = useState(false);
   const [followedUser, setFollowedUser] = useState();
   const [unfollowedUser, setUnfollowedUser] = useState();
-  const loggedInUser = logInUser._id;
+  const loggedInUser = logInUser?._id;
 
   const [user, setUser] = useState();
   useEffect(() => {
@@ -37,6 +39,20 @@ const Profile = ({ logInUser }) => {
     fetchData();
     fetchPosts();
   }, [loggedInUser]);
+
+  const logout = async () => {
+    const res = await fetch("/user/logout", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await res.json();
+    if (data.success === true) {
+      setIsAuthenticated(false);
+      navigate("/login");
+    }
+  };
 
   const handleUnfollow = async (user) => {
     const response = await fetch(`/user/${loggedInUser}/unfollow`, {
@@ -106,6 +122,9 @@ const Profile = ({ logInUser }) => {
                 >
                   Edit profile
                 </Link>
+                <button onClick={logout}>
+                  <FiLogOut size={23} />
+                </button>
               </div>
               <div className="flex gap-8 ">
                 <div className="sm:flex gap-1 items-center text-center">

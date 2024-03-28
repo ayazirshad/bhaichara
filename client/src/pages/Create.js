@@ -74,7 +74,7 @@ const Create = ({ logInUser }) => {
         />
       )}
       <div className=" w-full flex justify-center items-center flex-col p-5">
-        <div className=" w-full flex justify-center items-center flex-col">
+        <div className="w-full sm:w-96 flex justify-center items-center flex-col">
           <div className="w-full">
             <input
               type="text"
@@ -86,7 +86,7 @@ const Create = ({ logInUser }) => {
           </div>
           {image !== "" || croppedImage !== "" ? (
             <>
-              <div className="aspect-square w-full sm:w-56 sm:h-56">
+              <div className="aspect-square w-full sm:w-96">
                 <img
                   className="w-full h-full"
                   src={croppedImage !== "" ? croppedImage : image}
@@ -103,7 +103,7 @@ const Create = ({ logInUser }) => {
               </div>
             </>
           ) : (
-            <div className="aspect-square w-full sm:w-56 sm:h-56 bg-gray-200">
+            <div className="aspect-square w-full sm:w-96 bg-gray-200">
               <input
                 type="file"
                 accept="image/*"

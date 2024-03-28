@@ -5,7 +5,7 @@ import { HiMiniPlusCircle, HiOutlinePlusCircle } from "react-icons/hi2";
 import { IoSearch } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 
-const BottomBar = ({ logInUser, setIsAuthenticated }) => {
+const BottomBar = ({ logInUser }) => {
   const location = useLocation();
   const navItems = [
     {

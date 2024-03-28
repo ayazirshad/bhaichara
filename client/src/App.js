@@ -21,7 +21,6 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    console.log("app use effect running");
     const loadUser = async () => {
       const res = await fetch("/user/loadUser", {
         method: "GET",
@@ -43,44 +42,54 @@ const App = () => {
   }, [isAuthenticated]);
 
   return (
-    <div className="sm:flex w-full">
+    <div className=" sm:flex w-full">
       {isAuthenticated ? (
         <>
-          <div className="hidden sm:block">
+          <div className=" hidden sm:block">
             <SideMenu
               logInUser={logInUser}
               setIsAuthenticated={setIsAuthenticated}
             />
           </div>
 
-          <Routes>
-            <Route path="/" element={<Home logInUser={logInUser} />} />
-            <Route path="/search" element={<Search logInUser={logInUser} />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/messenger" element={<Messenger />} />
-            <Route path="/create" element={<Create logInUser={logInUser} />} />
-            <Route
-              path="/profile"
-              element={<Profile logInUser={logInUser} />}
-            />
-            <Route
-              path="/profile/edit"
-              element={<EditProfile logInUser={logInUser} />}
-            />
-            <Route
-              path="/post/:postId"
-              element={<PersonalPost logInUser={logInUser} />}
-            />
-            <Route
-              path="/account/:userName"
-              element={<Account logInUser={logInUser} />}
-            />
-          </Routes>
+          <div className="flex-1 ">
+            <Routes>
+              <Route path="/" element={<Home logInUser={logInUser} />} />
+              <Route
+                path="/search"
+                element={<Search logInUser={logInUser} />}
+              />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/messenger" element={<Messenger />} />
+              <Route
+                path="/create"
+                element={<Create logInUser={logInUser} />}
+              />
+              <Route
+                path="/profile"
+                element={
+                  <Profile
+                    logInUser={logInUser}
+                    setIsAuthenticated={setIsAuthenticated}
+                  />
+                }
+              />
+              <Route
+                path="/profile/edit"
+                element={<EditProfile logInUser={logInUser} />}
+              />
+              <Route
+                path="/post/:postId"
+                element={<PersonalPost logInUser={logInUser} />}
+              />
+              <Route
+                path="/account/:userName"
+                element={<Account logInUser={logInUser} />}
+              />
+            </Routes>
+          </div>
           <div className="sm:hidden fixed bottom-0 z-20 w-full">
-            <BottomBar
-              logInUser={logInUser}
-              setIsAuthenticated={setIsAuthenticated}
-            />
+            <BottomBar logInUser={logInUser} />
           </div>
         </>
       ) : (

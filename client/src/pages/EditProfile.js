@@ -4,7 +4,6 @@ import { MdEdit } from "react-icons/md";
 import ImageCropper from "../components/imageCrop/ImageCropper";
 
 const EditProfile = ({ logInUser }) => {
-  // const logInUserId = "65c44c79ac67152520d0897b";
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [loggedInUser, setloggedInUser] = useState({});
@@ -22,7 +21,6 @@ const EditProfile = ({ logInUser }) => {
     // Trigger click on the hidden file input
     fileInputRef.current.click();
   };
-  //   console.log("newUserName", newUserName);
   useEffect(() => {
     if (logInUser) {
       const fetchUser = async () => {
@@ -33,7 +31,6 @@ const EditProfile = ({ logInUser }) => {
           },
         });
         const data = await res.json();
-        //   console.log(data);
         setloggedInUser(data);
         setNewUserName(data.username);
         setNewBio(data.bio);
@@ -52,9 +49,6 @@ const EditProfile = ({ logInUser }) => {
 
     const res = await fetch(`/user/${loggedInUser?._id}/update`, {
       method: "PUT",
-      // headers: {
-      //   "Content-Type": "application/json",
-      // },
       body: formData,
     });
     if (res.status === 201) {
