@@ -10,7 +10,6 @@ const cloudinary = require("cloudinary").v2;
 const router = express.Router();
 
 const multer = require("multer");
-const { randomInt } = require("crypto");
 const storage = multer.memoryStorage();
 const limits = {
   fieldSize: 1024 * 1024 * 30, // limit to 30MB
@@ -19,418 +18,405 @@ const upload = multer({ storage, limits });
 
 //_______________ POSTS ______________
 
-// check api
+// create post
 
-// router.post("/check/api", upload.single("image"), async (req, res) => {
+// router.post("/post/create", upload.single("image"), async (req, res) => {
 //   try {
-//     const { caption, image } = req.body;
-//     console.log("caption", caption);
-//     // cloudinary.config({
-//     //   cloud_name: "do4b8wctw",
-//     //   api_key: "565196955737653",
-//     //   api_secret: "ngoKYorc2Vd1hY-0FQzbgQc5Tbs",
-//     // });
-//     console.log("cloudinary.config()", cloudinary.config());
-//     // console.log("path", path.join(__dirname, "../images/checkImage.jpg"));
+//     const { user, image, caption } = req.body;
+//     console.log("create request");
+//     cloudinary.config({
+//       cloud_name: "do4b8wctw",
+//       api_key: "565196955737653",
+//       api_secret: "ngoKYorc2Vd1hY-0FQzbgQc5Tbs",
+//     });
+//     console.log("cloudinary request done");
 //     const result = await cloudinary.uploader.upload(image, {
 //       use_filename: true,
 //       folder: "instaClone",
 //     });
-//     console.log("cloudinary result", result);
-//     res.status(200).send("ok");
+
+//     const newPost = new Post({
+//       user,
+//       image: result.secure_url,
+//       caption,
+//       likes: [],
+//       comments: [],
+//     });
+
+//     const createdPost = await newPost.save();
+//     const userWithCreatedPost = await User.findByIdAndUpdate(
+//       user,
+//       {
+//         $push: { posts: createdPost },
+//       },
+//       { new: true }
+//     );
+
+//     res.status(201).json({
+//       msg: "post created",
+//       post: createdPost,
+//       user: userWithCreatedPost,
+//       success: true,
+//     });
 //   } catch (e) {
-//     res.status(500).json({ msg: "internal server error", error: e });
+//     res.status(500),
+//       json({ msg: "internal server error", success: false, error: e });
 //   }
 // });
 
-// create post
-
-router.post("/post/create", upload.single("image"), async (req, res) => {
-  try {
-    const { user, image, caption } = req.body;
-    console.log("create request");
-    cloudinary.config({
-      cloud_name: "do4b8wctw",
-      api_key: "565196955737653",
-      api_secret: "ngoKYorc2Vd1hY-0FQzbgQc5Tbs",
-    });
-    console.log("cloudinary request done");
-    const result = await cloudinary.uploader.upload(image, {
-      use_filename: true,
-      folder: "instaClone",
-    });
-
-    const newPost = new Post({
-      user,
-      image: result.secure_url,
-      caption,
-      likes: [],
-      comments: [],
-    });
-
-    const createdPost = await newPost.save();
-    const userWithCreatedPost = await User.findByIdAndUpdate(
-      user,
-      {
-        $push: { posts: createdPost },
-      },
-      { new: true }
-    );
-
-    console.log(createdPost);
-    console.log("userWithCreatedPost", userWithCreatedPost);
-    res.status(201).json({
-      msg: "post created",
-      post: createdPost,
-      user: userWithCreatedPost,
-      success: true,
-    });
-  } catch (e) {
-    res.status(500),
-      json({ msg: "internal server error", success: false, error: e });
-  }
-});
-
 // get posts of specific user
 
-router.get("/post/:userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const data = await Post.find({ user: userId }).populate([
-      { path: "user" },
-      { path: "comments", model: "Comment" },
-      { path: "likes", model: "User" },
-    ]);
-    //   .populate({ path: "likes", model: "User" });
-    // console.log(data);
-    res.status(201).json({ msg: "sending posts", posts: data });
-  } catch (e) {
-    // console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/post/:userId", async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     const data = await Post.find({ user: userId }).populate([
+//       { path: "user" },
+//       { path: "comments", model: "Comment" },
+//       { path: "likes", model: "User" },
+//     ]);
+//     //   .populate({ path: "likes", model: "User" });
+//     // console.log(data);
+//     res.status(201).json({ msg: "sending posts", posts: data });
+//   } catch (e) {
+//     // console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // get all posts
 
-router.get("/post", async (req, res) => {
-  try {
-    // console.log("get attempt");
-    const data = await Post.find().populate([
-      { path: "user" },
-      {
-        path: "comments",
-        model: "Comment",
-        populate: { path: "user", model: "User" },
-      },
-      { path: "likes", model: "User" },
-    ]);
+// router.get("/post/get/:page", async (req, res) => {
+//   try {
+//     const { page } = req.params;
+//     const limit = 5;
+//     let skip = (page - 1) * limit;
+//     const foundPosts = await Post.find();
+//     const totalPosts = foundPosts.length;
+//     const desiredPosts = page * limit;
+//     const t_l = totalPosts + limit;
 
-    // const sortingData = ["username", "id", "likes"];
-    let randomNumber = Math.floor(Math.random() * 6);
-    let newData = data;
-    if (randomNumber === 0) {
-      newData = data.sort((a, b) => a.user._id - b.user._id);
-    } else if (randomNumber === 1) {
-      newData = data.sort((a, b) => a._id - b._id);
-    } else if (randomNumber === 2) {
-      newData = data.sort((a, b) => a.likes.length - b.likes.length);
-    } else if (randomNumber === 3) {
-      newData = data.sort((a, b) => a.comments.length - b.comments.length);
-    } else if (randomNumber === 4) {
-      newData = data.sort((a, b) => a.user.username - b.user.username);
-    } else if (randomNumber === 5) {
-      newData = data.sort((a, b) => a.user.email - b.user.email);
-    }
-    // console.log("randomNumber", randomNumber);
-    // console.log("newData", newData);
+//     if (desiredPosts - t_l >= 0) {
+//       return res
+//         .status(201)
+//         .json({ msg: "no more posts", posts: [], totalPosts });
+//     }
+//     const data = await Post.find()
+//       .limit(limit)
+//       .skip(skip)
+//       .populate([
+//         { path: "user" },
+//         {
+//           path: "comments",
+//           model: "Comment",
+//           populate: { path: "user", model: "User" },
+//         },
+//         { path: "likes", model: "User" },
+//       ]);
 
-    res.status(201).json({ msg: "sending posts", posts: newData });
-  } catch (e) {
-    // console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+//     // const sortingData = ["username", "id", "likes"];
+//     let randomNumber = Math.floor(Math.random() * 6);
+//     let newData = data;
+//     if (randomNumber === 0) {
+//       newData = data.sort((a, b) => a.user._id - b.user._id);
+//     } else if (randomNumber === 1) {
+//       newData = data.sort((a, b) => a._id - b._id);
+//     } else if (randomNumber === 2) {
+//       newData = data.sort((a, b) => a.likes.length - b.likes.length);
+//     } else if (randomNumber === 3) {
+//       newData = data.sort((a, b) => a.comments.length - b.comments.length);
+//     } else if (randomNumber === 4) {
+//       newData = data.sort((a, b) => a.user.username - b.user.username);
+//     } else if (randomNumber === 5) {
+//       newData = data.sort((a, b) => a.user.email - b.user.email);
+//     }
+
+//     res.status(201).json({ msg: "sending posts", posts: newData, totalPosts });
+//   } catch (e) {
+//     // console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // get specific post
 
-router.get("/post/:id/postId", async (req, res) => {
-  try {
-    const id = req.params.id;
-    // console.log("get attempt");
-    const data = await Post.findById(id).populate([
-      { path: "user" },
-      { path: "comments", model: "Comment" },
-      { path: "likes", model: "User" },
-    ]);
-    // console.log(data[0].user.username);
-    console.log("personal post", data);
-    if (data) {
-      res.status(201).json(data);
-    } else {
-      res.status(204).json({ msg: "post not found" });
-    }
-  } catch (e) {
-    // console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/post/:id/postId", async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     // console.log("get attempt");
+//     const data = await Post.findById(id).populate([
+//       { path: "user" },
+//       { path: "comments", model: "Comment" },
+//       { path: "likes", model: "User" },
+//     ]);
+//     // console.log(data[0].user.username);
+//     console.log("personal post", data);
+//     if (data) {
+//       res.status(201).json(data);
+//     } else {
+//       res.status(204).json({ msg: "post not found" });
+//     }
+//   } catch (e) {
+//     // console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // delete post
 
-router.delete("/post/:postId/delete", async (req, res) => {
-  try {
-    const _id = req.params.postId;
-    console.log(_id);
-    // const { userId } = req.body;
-    const deletedPost = await Post.findByIdAndDelete(_id);
-    // console.log("deletedPost", deletedPost);
-    if (deletedPost) {
-      const userWithDeletedPost = await User.findByIdAndUpdate(
-        deletedPost.user,
-        { $pull: { posts: _id } },
-        { new: true }
-      ).populate([
-        { path: "followers", model: "User" },
-        { path: "following", model: "User" },
-        { path: "posts", model: "Post" },
-      ]);
-      await Comment.deleteMany({ post: _id });
-      res.status(201).json({ msg: "post deleted" });
-    } else {
-      res.status(200).json({ msg: "post not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.delete("/post/:postId/delete", async (req, res) => {
+//   try {
+//     const _id = req.params.postId;
+//     console.log(_id);
+//     // const { userId } = req.body;
+//     const deletedPost = await Post.findByIdAndDelete(_id);
+//     // console.log("deletedPost", deletedPost);
+//     if (deletedPost) {
+//       const userWithDeletedPost = await User.findByIdAndUpdate(
+//         deletedPost.user,
+//         { $pull: { posts: _id } },
+//         { new: true }
+//       ).populate([
+//         { path: "followers", model: "User" },
+//         { path: "following", model: "User" },
+//         { path: "posts", model: "Post" },
+//       ]);
+//       await Comment.deleteMany({ post: _id });
+//       res.status(201).json({ msg: "post deleted" });
+//     } else {
+//       res.status(200).json({ msg: "post not found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // like post
 
-router.put("/post/:postId/like", async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    const { userId } = req.body;
-    const updatedPost = await Post.findByIdAndUpdate(
-      postId,
-      { $addToSet: { likes: userId } },
-      { new: true }
-    );
-    const likedPost = await Post.findById(updatedPost._id).populate([
-      { path: "user" },
-      { path: "comments", model: "Comment" },
-      { path: "likes", model: "User" },
-    ]);
-    if (likedPost) {
-      res.status(201).json(likedPost);
-    } else {
-      res.status(204).json({ msg: "no post found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.put("/post/:postId/like", async (req, res) => {
+//   try {
+//     const postId = req.params.postId;
+//     const { userId } = req.body;
+//     const updatedPost = await Post.findByIdAndUpdate(
+//       postId,
+//       { $addToSet: { likes: userId } },
+//       { new: true }
+//     );
+//     const likedPost = await Post.findById(updatedPost._id).populate([
+//       { path: "user" },
+//       { path: "comments", model: "Comment" },
+//       { path: "likes", model: "User" },
+//     ]);
+//     if (likedPost) {
+//       res.status(201).json(likedPost);
+//     } else {
+//       res.status(204).json({ msg: "no post found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // unlike post
 
-router.put("/post/:postId/unlike", async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    const { userId } = req.body;
-    const updatedPost = await Post.findByIdAndUpdate(
-      postId,
-      { $pull: { likes: userId } },
-      { new: true }
-    );
-    const unLikedPost = await Post.findById(updatedPost._id).populate([
-      { path: "user" },
-      { path: "comments", model: "Comment" },
-      { path: "likes", model: "User" },
-    ]);
-    // console.log("updatedPost", updatedPost);
-    if (unLikedPost) {
-      res.status(201).json(unLikedPost);
-    } else {
-      res.status(204).json({ msg: "no post found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.put("/post/:postId/unlike", async (req, res) => {
+//   try {
+//     const postId = req.params.postId;
+//     const { userId } = req.body;
+//     const updatedPost = await Post.findByIdAndUpdate(
+//       postId,
+//       { $pull: { likes: userId } },
+//       { new: true }
+//     );
+//     const unLikedPost = await Post.findById(updatedPost._id).populate([
+//       { path: "user" },
+//       { path: "comments", model: "Comment" },
+//       { path: "likes", model: "User" },
+//     ]);
+//     // console.log("updatedPost", updatedPost);
+//     if (unLikedPost) {
+//       res.status(201).json(unLikedPost);
+//     } else {
+//       res.status(204).json({ msg: "no post found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // comment
 
-router.put("/post/:postId/comment", async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    const post = await Post.findById({ _id: postId });
-    // console.log(post);
-    // console.log("comment data", req.body);
-    if (post) {
-      const { userId, text, createdAt } = req.body;
-      // console.log(userId, text, createdAt);
-      const comment = new Comment({
-        user: userId,
-        post: postId,
-        text,
-        createdAt,
-      });
-      // console.log("commentToBePosted", comment);
-      const newComment = await comment.save();
-      // console.log("comment", newComment);
-      const commentedPost = await Post.findByIdAndUpdate(
-        postId,
-        {
-          $push: { comments: newComment },
-        },
-        { new: true }
-      ).populate([
-        { path: "user" },
-        { path: "comments", model: "Comment" },
-        { path: "likes", model: "User" },
-      ]);
-      // console.log("commentedPost", commentedPost);
-      res.status(201).json(commentedPost);
-    } else {
-      res.status(204).json({ msg: "no post found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.put("/post/:postId/comment", async (req, res) => {
+//   try {
+//     const postId = req.params.postId;
+//     const post = await Post.findById({ _id: postId });
+//     // console.log(post);
+//     // console.log("comment data", req.body);
+//     if (post) {
+//       const { userId, text, createdAt } = req.body;
+//       // console.log(userId, text, createdAt);
+//       const comment = new Comment({
+//         user: userId,
+//         post: postId,
+//         text,
+//         createdAt,
+//       });
+//       // console.log("commentToBePosted", comment);
+//       const newComment = await comment.save();
+//       // console.log("comment", newComment);
+//       const commentedPost = await Post.findByIdAndUpdate(
+//         postId,
+//         {
+//           $push: { comments: newComment },
+//         },
+//         { new: true }
+//       ).populate([
+//         { path: "user" },
+//         { path: "comments", model: "Comment" },
+//         { path: "likes", model: "User" },
+//       ]);
+//       // console.log("commentedPost", commentedPost);
+//       res.status(201).json(commentedPost);
+//     } else {
+//       res.status(204).json({ msg: "no post found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // delete Comment
 
-router.put("/post/:postId/deleteComment", async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    const { commentId } = req.body;
-    const deletedComment = await Comment.findByIdAndDelete(commentId);
-    // console.log("deletedComment", deletedComment);
-    if (deletedComment === null) {
-      res.status(200).json({ msg: "comment not found" });
-    } else {
-      const postToBe = await Post.findById(postId);
-      const commentDeletedPost = await Post.findByIdAndUpdate(
-        postId,
-        {
-          $pull: { comments: commentId },
-        },
-        { new: true }
-      ).populate([
-        { path: "user" },
-        { path: "comments", model: "Comment" },
-        { path: "likes", model: "User" },
-      ]);
-      console.log(commentDeletedPost);
-      // console.log(postToBe);
-      res.status(201).json(commentDeletedPost);
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.put("/post/:postId/deleteComment", async (req, res) => {
+//   try {
+//     const postId = req.params.postId;
+//     const { commentId } = req.body;
+//     const deletedComment = await Comment.findByIdAndDelete(commentId);
+//     // console.log("deletedComment", deletedComment);
+//     if (deletedComment === null) {
+//       res.status(200).json({ msg: "comment not found" });
+//     } else {
+//       const postToBe = await Post.findById(postId);
+//       const commentDeletedPost = await Post.findByIdAndUpdate(
+//         postId,
+//         {
+//           $pull: { comments: commentId },
+//         },
+//         { new: true }
+//       ).populate([
+//         { path: "user" },
+//         { path: "comments", model: "Comment" },
+//         { path: "likes", model: "User" },
+//       ]);
+//       console.log(commentDeletedPost);
+//       // console.log(postToBe);
+//       res.status(201).json(commentDeletedPost);
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 //_______________ USERS ______________
 
 // create user
 
-router.post("/user/create", async (req, res) => {
-  try {
-    const { name, username, email, password } = req.body;
+// router.post("/user/create", async (req, res) => {
+//   try {
+//     const { name, username, email, password } = req.body;
 
-    const newUser = new User({
-      name,
-      username,
-      email,
-      password,
-      profilePicture:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      posts: [],
-      followers: [],
-      following: [],
-    });
-    // // console.log("user before reg", newUser);
-    // const token = await newUser.generateAuthToken();
-    // res.cookie("jwt", token, {
-    //   sameSite: "None",
-    // });
-    // console.log("token", token);
-    const createdUser = await newUser.save();
-    console.log("user after reg", createdUser);
-    res.status(201).json({ msg: "user registered", user: createdUser });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error", error: e });
-  }
-});
+//     const newUser = new User({
+//       name,
+//       username,
+//       email,
+//       password,
+//       profilePicture:
+//         "https://res.cloudinary.com/do4b8wctw/image/upload/v1711628515/profilePictures/PngItem_5040528_ptfbvb.png",
+//       posts: [],
+//       followers: [],
+//       following: [],
+//     });
+//     // // console.log("user before reg", newUser);
+//     // const token = await newUser.generateAuthToken();
+//     // res.cookie("jwt", token, {
+//     //   sameSite: "None",
+//     // });
+//     // console.log("token", token);
+//     const createdUser = await newUser.save();
+//     console.log("user after reg", createdUser);
+//     res.status(201).json({ msg: "user registered", user: createdUser });
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error", error: e });
+//   }
+// });
 
 // load user
 
-router.get("/user/loadUser", async (req, res) => {
-  try {
-    // console.log("load user request ");
-    // console.log(req.cookies);
-    const token = req.cookies?.token;
-    console.log("token", token);
-    // const temp = req.headers.cookie;
-    // console.log(temp);
-    // console.log(req.cookies);
-    if (token) {
-      const verifiedUser = jwt.verify(
-        token,
-        "mynameisayazirshadmynameisayazirshad"
-      );
-      const loggedInUser = await User.findOne({ _id: verifiedUser._id });
-      // console.log("loggedInUser", loggedInUser);
-      res.status(200).json({ user: loggedInUser, authenticated: true });
-    } else {
-      res.status(402).json({ msg: "no user logged in", authenticated: false });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error", error: e });
-  }
-});
+// router.get("/user/loadUser", async (req, res) => {
+//   try {
+//     // console.log("load user request ");
+//     // console.log(req.cookies);
+//     const token = req.cookies?.token;
+//     console.log("token", token);
+//     // const temp = req.headers.cookie;
+//     // console.log(temp);
+//     // console.log(req.cookies);
+//     if (token) {
+//       const verifiedUser = jwt.verify(
+//         token,
+//         "mynameisayazirshadmynameisayazirshad"
+//       );
+//       const loggedInUser = await User.findOne({ _id: verifiedUser._id });
+//       // console.log("loggedInUser", loggedInUser);
+//       res.status(200).json({ user: loggedInUser, authenticated: true });
+//     } else {
+//       res.status(402).json({ msg: "no user logged in", authenticated: false });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error", error: e });
+//   }
+// });
 
 // user login
 
-router.post("/user/login", async (req, res) => {
-  try {
-    console.log("login request", req.body);
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    // console.log("user", user);
-    console.log("password", password);
+// router.post("/user/login", async (req, res) => {
+//   try {
+//     console.log("login request", req.body);
+//     const { email, password } = req.body;
+//     const user = await User.findOne({ email });
+//     // console.log("user", user);
+//     console.log("password", password);
 
-    if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) {
-        const token = await user.generateAuthToken();
-        res
-          .status(200)
-          .cookie("token", token, {
-            httpOnly: true,
-            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          })
-          .json({ msg: "logged in", loggedIn: true, user });
-      } else {
-        res
-          .status(404)
-          .json({ msg: "invalid email or password", loggedIn: false });
-      }
-    } else {
-      res.status(404).json({ msg: "invalid email or password" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error", error: e });
-  }
-});
+//     if (user) {
+//       const isMatch = await bcrypt.compare(password, user.password);
+//       if (isMatch) {
+//         const token = await user.generateAuthToken();
+//         res
+//           .status(200)
+//           .cookie("token", token, {
+//             httpOnly: true,
+//             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+//           })
+//           .json({ msg: "logged in", loggedIn: true, user });
+//       } else {
+//         res
+//           .status(404)
+//           .json({ msg: "invalid email or password", loggedIn: false });
+//       }
+//     } else {
+//       res.status(404).json({ msg: "invalid email or password" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error", error: e });
+//   }
+// });
 
 // user logout
 
@@ -767,68 +753,68 @@ router.delete("/comment/:commentId/delete", async (req, res) => {
 
 // _____________DEFAULT ERROR ROUTE_____________________
 
-router.get("*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.get("/post/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.get("/post/:userId/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
+// router.get("*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.get("/post/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.get("/post/:userId/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
 
-router.post("*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.post("/post/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.post("/post/create/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.post("/user/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.post("/user/create/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
+// router.post("*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.post("/post/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.post("/post/create/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.post("/user/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.post("/user/create/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
 
-router.put("*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.put("/user/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.put("/user/:userId/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.put("/post/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.put("/post/:postId/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
+// router.put("*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.put("/user/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.put("/user/:userId/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.put("/post/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.put("/post/:postId/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
 
-router.delete("*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.delete("/post/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.delete("/post/:postId/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.delete("/post/:postId/delete*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.delete("/user/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.delete("/user/:postId/*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
-router.delete("/user/:postId/delete*", (req, res) => {
-  res.status(404).json({ msg: "Error 404! page not found" });
-});
+// router.delete("*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.delete("/post/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.delete("/post/:postId/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.delete("/post/:postId/delete*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.delete("/user/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.delete("/user/:postId/*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
+// router.delete("/user/:postId/delete*", (req, res) => {
+//   res.status(404).json({ msg: "Error 404! page not found" });
+// });
 
 module.exports = router;
