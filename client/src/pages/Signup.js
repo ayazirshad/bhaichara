@@ -81,7 +81,7 @@ const Signup = () => {
   return (
     <div className="w-full flex justify-center py-10  h-screen items-center">
       <div className="w-72 p-8 flex flex-col gap-9  shadow-2xl border rounded-md bg-[#fff]">
-        <h1 className="text-xl font-bold text-center">BhaiChara</h1>
+        <h1 className="text-3xl font-bold font-insta text-center">BhaiChara</h1>
         <form onSubmit={(e) => registerUser(e)}>
           <div className="relative">
             <input

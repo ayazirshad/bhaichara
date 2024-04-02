@@ -2,17 +2,19 @@ const chatModel = require("../schema/chatSchema");
 
 const createChat = async (req, res) => {
   try {
-    const { firtsId, secondId } = req.params;
-    const founChat = await chatModel.findOne({
-      members: { $all: { firtsId, secondId } },
+    const { firstId, secondId } = req.body;
+
+    const foundChat = await chatModel.findOne({
+      members: { $all: [firstId, secondId] },
     });
-    if (founChat) return res.status(200).json(chat);
-    const chat = new chatModel({ members: [firtsId, secondId] });
+    console.log("foundChat", foundChat);
+    if (foundChat) return res.status(200).json(foundChat);
+    const chat = new chatModel({ members: [firstId, secondId] });
     const createdChat = await chat.save();
     res.status(200).json(createdChat);
   } catch (error) {
     console.log(error);
-    resizeBy.status(500).json(error);
+    res.status(500).json(error);
   }
 };
 

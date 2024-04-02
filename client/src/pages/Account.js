@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { BsGrid } from "react-icons/bs";
 import { RiMessengerLine } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { createUserChat, updateCurrentChat } from "../redux/actions";
 
 const Account = ({ logInUser }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loggedInUser, setLoggedInUser] = useState(logInUser);
   const params = useParams();
@@ -33,6 +36,20 @@ const Account = ({ logInUser }) => {
       fetchData();
     }
   }, [userName, navigate, loggedInUser]);
+
+  const createChat = async (firstId, secondId) => {
+    console.log("createChat is invoked");
+    const res = await fetch("/chats/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ firstId, secondId }),
+    });
+    const data = await res.json();
+    dispatch(createUserChat(data));
+    dispatch(updateCurrentChat(data));
+  };
 
   const handleFollow = async (item) => {
     const response = await fetch(`/user/${loggedInUser?._id}/follow`, {
@@ -126,6 +143,7 @@ const Account = ({ logInUser }) => {
                   <Link
                     className="bg-gray-100 hover:bg-gray-200 font-semibold text-xs rounded-md py-[6px] px-3"
                     to={"/messenger"}
+                    onClick={() => createChat(user?._id, loggedInUser?._id)}
                   >
                     <RiMessengerLine size={20} />
                   </Link>

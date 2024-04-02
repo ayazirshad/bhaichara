@@ -7,11 +7,14 @@ import { TiSocialInstagram } from "react-icons/ti";
 import { HiOutlinePlusCircle, HiMiniPlusCircle } from "react-icons/hi2";
 import { RiMenu3Fill } from "react-icons/ri";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearUserOnLogout } from "../../redux/actions";
 
 const SideMenu = ({ logInUser, setIsAuthenticated }) => {
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const loggedInUSer = logInUser;
 
   const logout = async () => {
@@ -22,9 +25,10 @@ const SideMenu = ({ logInUser, setIsAuthenticated }) => {
       },
     });
     const data = await res.json();
-    console.log("logout data", data);
     if (data.success === true) {
+      dispatch(clearUserOnLogout());
       setIsAuthenticated(false);
+
       navigate("/login");
     }
   };

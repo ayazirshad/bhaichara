@@ -420,336 +420,336 @@ const upload = multer({ storage, limits });
 
 // user logout
 
-router.get("/user/logout", auth, async (req, res) => {
-  try {
-    res.clearCookie("token");
-    req.user.tokens = req.user.tokens.filter((item) => item.token != req.token);
-    await req.user.save();
-    res.status(201).json({ msg: "logged out successfully", success: true });
-  } catch (e) {
-    console.log(e);
-    res
-      .status(500)
-      .json({ msg: "Internal server error", error: e, success: false });
-  }
-});
+// router.get("/user/logout", auth, async (req, res) => {
+//   try {
+//     res.clearCookie("token");
+//     req.user.tokens = req.user.tokens.filter((item) => item.token != req.token);
+//     await req.user.save();
+//     res.status(201).json({ msg: "logged out successfully", success: true });
+//   } catch (e) {
+//     console.log(e);
+//     res
+//       .status(500)
+//       .json({ msg: "Internal server error", error: e, success: false });
+//   }
+// });
 
 // update user account
 
-router.put("/user/:userId/update", upload.single("image"), async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    // console.log("req.body", req.body);
-    let { username, name, bio, image } = req.body;
-    console.log("name", name);
-    console.log("bio", bio);
-    // TODO to set bio and name
-    if (name === undefined) {
-      name = "";
-    }
-    if (bio === undefined) {
-      bio = "";
-      console.log("in bio if");
-    }
-    cloudinary.config({
-      cloud_name: "do4b8wctw",
-      api_key: "565196955737653",
-      api_secret: "ngoKYorc2Vd1hY-0FQzbgQc5Tbs",
-    });
-    const result = await cloudinary.uploader.upload(image, {
-      use_filename: true,
-      folder: "instaClone",
-    });
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { username, name, bio, profilePicture: result.secure_url },
-      { new: true }
-    );
-    console.log(updatedUser);
-    res.status(201).json(updatedUser);
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.put("/user/:userId/update", upload.single("image"), async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     // console.log("req.body", req.body);
+//     let { username, name, bio, image } = req.body;
+//     console.log("name", name);
+//     console.log("bio", bio);
+//     // TODO to set bio and name
+//     if (name === undefined) {
+//       name = "";
+//     }
+//     if (bio === undefined) {
+//       bio = "";
+//       console.log("in bio if");
+//     }
+//     cloudinary.config({
+//       cloud_name: "do4b8wctw",
+//       api_key: "565196955737653",
+//       api_secret: "ngoKYorc2Vd1hY-0FQzbgQc5Tbs",
+//     });
+//     const result = await cloudinary.uploader.upload(image, {
+//       use_filename: true,
+//       folder: "instaClone",
+//     });
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { username, name, bio, profilePicture: result.secure_url },
+//       { new: true }
+//     );
+//     console.log(updatedUser);
+//     res.status(201).json(updatedUser);
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // follow
 
-router.put("/user/:userId/follow", async (req, res) => {
-  try {
-    // console.log("fllow attempt");
-    const userId = req.params.userId;
-    // console.log(userId);
-    // console.log(req.body);
-    const { userToBeFollowed } = req.body;
+// router.put("/user/:userId/follow", async (req, res) => {
+//   try {
+//     // console.log("fllow attempt");
+//     const userId = req.params.userId;
+//     // console.log(userId);
+//     // console.log(req.body);
+//     const { userToBeFollowed } = req.body;
 
-    const userFollowing = await User.findByIdAndUpdate(
-      userId,
-      {
-        $addToSet: { following: userToBeFollowed },
-      },
-      { new: true }
-    ).populate([
-      { path: "followers", model: "User" },
-      { path: "following", model: "User" },
-      { path: "posts", model: "Post" },
-    ]);
-    // const userFollowing = await User.find({ _id: following._id })
-    console.log("userFollowing", userFollowing);
+//     const userFollowing = await User.findByIdAndUpdate(
+//       userId,
+//       {
+//         $addToSet: { following: userToBeFollowed },
+//       },
+//       { new: true }
+//     ).populate([
+//       { path: "followers", model: "User" },
+//       { path: "following", model: "User" },
+//       { path: "posts", model: "Post" },
+//     ]);
+//     // const userFollowing = await User.find({ _id: following._id })
+//     console.log("userFollowing", userFollowing);
 
-    const userFollowed = await User.findByIdAndUpdate(
-      userToBeFollowed,
-      {
-        $addToSet: { followers: userId },
-      },
-      { new: true }
-    )
-      .populate("followers")
-      .populate("following")
-      .populate("posts");
+//     const userFollowed = await User.findByIdAndUpdate(
+//       userToBeFollowed,
+//       {
+//         $addToSet: { followers: userId },
+//       },
+//       { new: true }
+//     )
+//       .populate("followers")
+//       .populate("following")
+//       .populate("posts");
 
-    console.log("userFollowed", userFollowed);
+//     console.log("userFollowed", userFollowed);
 
-    if (userFollowing && userFollowed) {
-      console.log("sending follow followers");
-      res.status(200).json({
-        msg: "started following",
-        followingUser: userFollowing,
-        followedUser: userFollowed,
-      });
-    } else {
-      res.status(204).json({ msg: "user not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+//     if (userFollowing && userFollowed) {
+//       console.log("sending follow followers");
+//       res.status(200).json({
+//         msg: "started following",
+//         followingUser: userFollowing,
+//         followedUser: userFollowed,
+//       });
+//     } else {
+//       res.status(204).json({ msg: "user not found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // get user by username
 
-router.get("/user/:userName", async (req, res) => {
-  try {
-    const userName = req.params.userName;
-    const userFound = await User.findOne({ username: userName }).populate([
-      { path: "posts" },
-      { path: "followers" },
-      { path: "following" },
-    ]);
-    if (userFound) {
-      res.status(200).json(userFound);
-    } else {
-      res.status(204).json({ msg: "User not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/user/:userName", async (req, res) => {
+//   try {
+//     const userName = req.params.userName;
+//     const userFound = await User.findOne({ username: userName }).populate([
+//       { path: "posts" },
+//       { path: "followers" },
+//       { path: "following" },
+//     ]);
+//     if (userFound) {
+//       res.status(200).json(userFound);
+//     } else {
+//       res.status(204).json({ msg: "User not found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // get all users
 
-router.get("/user", async (req, res) => {
-  try {
-    const users = await User.find();
-    if (users) {
-      res.status(200).json(users);
-    } else {
-      res.status(200).json({ msg: "no registered user" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/user", async (req, res) => {
+//   try {
+//     const users = await User.find();
+//     if (users) {
+//       res.status(200).json(users);
+//     } else {
+//       res.status(200).json({ msg: "no registered user" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 //get user by id
 
-router.get("/user/:userId/userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    // console.log(userId);
-    const userFound = await User.findById(userId).populate([
-      { path: "posts" },
-      { path: "followers" },
-      { path: "following" },
-    ]);
-    // console.log("userFound", userFound);
-    if (userFound) {
-      res.status(201).json(userFound);
-    } else {
-      res.status(204).json({ msg: "User not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/user/:userId/userId", async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     // console.log(userId);
+//     const userFound = await User.findById(userId).populate([
+//       { path: "posts" },
+//       { path: "followers" },
+//       { path: "following" },
+//     ]);
+//     // console.log("userFound", userFound);
+//     if (userFound) {
+//       res.status(201).json(userFound);
+//     } else {
+//       res.status(204).json({ msg: "User not found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // user for ssuggestions // TODO , this will be reviews latter
 
-router.get("/user/:userLoggedIn/suggestions", async (req, res) => {
-  try {
-    const loggedInUser = req.params.userLoggedIn;
-    const foundUsers = await User.find({
-      username: { $ne: loggedInUser },
-    }).limit(10);
-    const logInUser = await User.findOne({ username: loggedInUser });
-    // console.log("logInUser from suggestion", logInUser);
-    const followingIds = logInUser.following.map((user) => user._id);
-    // console.log("followingIds", followingIds);
-    const users = foundUsers.filter(
-      (item) =>
-        !followingIds.some((id) => id.toString() === item._id.toString())
-    );
-    // console.log("users", users);
-    if (users) {
-      res.status(200).json({ msg: "Users found", suggestedUsers: users });
-    } else {
-      res.status(204).json({ msg: "Users not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/user/:userLoggedIn/suggestions", async (req, res) => {
+//   try {
+//     const loggedInUser = req.params.userLoggedIn;
+//     const foundUsers = await User.find({
+//       username: { $ne: loggedInUser },
+//     }).limit(10);
+//     const logInUser = await User.findOne({ username: loggedInUser });
+//     // console.log("logInUser from suggestion", logInUser);
+//     const followingIds = logInUser.following.map((user) => user._id);
+//     // console.log("followingIds", followingIds);
+//     const users = foundUsers.filter(
+//       (item) =>
+//         !followingIds.some((id) => id.toString() === item._id.toString())
+//     );
+//     // console.log("users", users);
+//     if (users) {
+//       res.status(200).json({ msg: "Users found", suggestedUsers: users });
+//     } else {
+//       res.status(204).json({ msg: "Users not found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // unfollow
 
-router.put("/user/:userId/unfollow", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const { userToBeUnfollowed } = req.body;
+// router.put("/user/:userId/unfollow", async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     const { userToBeUnfollowed } = req.body;
 
-    const userUnfollowing = await User.findByIdAndUpdate(
-      userId,
-      {
-        $pull: { following: userToBeUnfollowed },
-      },
-      { new: true }
-    )
-      .populate("followers")
-      .populate("following")
-      .populate("posts");
+//     const userUnfollowing = await User.findByIdAndUpdate(
+//       userId,
+//       {
+//         $pull: { following: userToBeUnfollowed },
+//       },
+//       { new: true }
+//     )
+//       .populate("followers")
+//       .populate("following")
+//       .populate("posts");
 
-    const userUnfollowed = await User.findByIdAndUpdate(
-      userToBeUnfollowed,
-      {
-        $pull: { followers: userId },
-      },
-      { new: true }
-    )
-      .populate("followers")
-      .populate("following")
-      .populate("posts");
+//     const userUnfollowed = await User.findByIdAndUpdate(
+//       userToBeUnfollowed,
+//       {
+//         $pull: { followers: userId },
+//       },
+//       { new: true }
+//     )
+//       .populate("followers")
+//       .populate("following")
+//       .populate("posts");
 
-    if (userUnfollowing && userUnfollowed) {
-      res.status(200).json({
-        msg: "unfollowed",
-        unFollowingUser: userUnfollowing,
-        unFollowedUser: userUnfollowed,
-      });
-    } else {
-      res.status(204).json({ msg: "user not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+//     if (userUnfollowing && userUnfollowed) {
+//       res.status(200).json({
+//         msg: "unfollowed",
+//         unFollowingUser: userUnfollowing,
+//         unFollowedUser: userUnfollowed,
+//       });
+//     } else {
+//       res.status(204).json({ msg: "user not found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // delete account of user
 
-router.delete("/user/:userId/delete", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const deletedUser = await User.findByIdAndDelete(userId);
-    if (deletedUser) {
-      await Post.deleteMany({ user: userId });
-      await Comment.deleteMany({ user: userId });
-      //TODO delete user from followers and following lists of every user
-      res.status(201).json({ msg: "user deleted" });
-    } else {
-      res.status(204).json({ msg: "user not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.delete("/user/:userId/delete", async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     const deletedUser = await User.findByIdAndDelete(userId);
+//     if (deletedUser) {
+//       await Post.deleteMany({ user: userId });
+//       await Comment.deleteMany({ user: userId });
+//       //TODO delete user from followers and following lists of every user
+//       res.status(201).json({ msg: "user deleted" });
+//     } else {
+//       res.status(204).json({ msg: "user not found" });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 //_______________ COMMENTS ______________
 
 // get comment by post id
 
-router.get("/comment/:postId/postId", async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    const foundCommment = await Comment.findOne({ post: postId }).populate(
-      "user"
-    );
-    if (foundCommment) {
-      res.status(201).json(foundCommment);
-    } else {
-      res.status(204).json({ msg: "comment not found" });
-    }
-  } catch (e) {
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/comment/:postId/postId", async (req, res) => {
+//   try {
+//     const postId = req.params.postId;
+//     const foundCommment = await Comment.findOne({ post: postId }).populate(
+//       "user"
+//     );
+//     if (foundCommment) {
+//       res.status(201).json(foundCommment);
+//     } else {
+//       res.status(204).json({ msg: "comment not found" });
+//     }
+//   } catch (e) {
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // get comment by user id
 
-router.get("/comment/:userId/userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const foundCommment = await Comment.findOne({ user: userId }).populate(
-      "user"
-    );
-    if (foundCommment) {
-      res.status(201).json(foundCommment);
-    } else {
-      res.status(204).json({ msg: "comment not found" });
-    }
-  } catch (e) {
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/comment/:userId/userId", async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     const foundCommment = await Comment.findOne({ user: userId }).populate(
+//       "user"
+//     );
+//     if (foundCommment) {
+//       res.status(201).json(foundCommment);
+//     } else {
+//       res.status(204).json({ msg: "comment not found" });
+//     }
+//   } catch (e) {
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // get comment by comment id
 
-router.get("/comment/:commentId/commentId", async (req, res) => {
-  try {
-    const commentId = req.params.commentId;
-    const foundCommment = await Comment.findOne({ _id: commentId }).populate(
-      "user"
-    );
-    if (foundCommment) {
-      res.status(201).json(foundCommment);
-    } else {
-      res.status(204).json({ msg: "comment not found" });
-    }
-  } catch (e) {
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.get("/comment/:commentId/commentId", async (req, res) => {
+//   try {
+//     const commentId = req.params.commentId;
+//     const foundCommment = await Comment.findOne({ _id: commentId }).populate(
+//       "user"
+//     );
+//     if (foundCommment) {
+//       res.status(201).json(foundCommment);
+//     } else {
+//       res.status(204).json({ msg: "comment not found" });
+//     }
+//   } catch (e) {
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // delete comment
 
-router.delete("/comment/:commentId/delete", async (req, res) => {
-  try {
-    const commentId = req.params.commentId;
-    const isCommentFound = await Comment.findById(commentId);
-    if (isCommentFound) {
-      await Comment.deleteOne({ _id: commentId });
-      res.status(201).json({ msg: "Comment deleted" });
-    } else {
-      res.status(204).json({ msg: "Comment not found" });
-    }
-  } catch (e) {
-    res.status(500).json({ msg: "Internal server error" });
-  }
-});
+// router.delete("/comment/:commentId/delete", async (req, res) => {
+//   try {
+//     const commentId = req.params.commentId;
+//     const isCommentFound = await Comment.findById(commentId);
+//     if (isCommentFound) {
+//       await Comment.deleteOne({ _id: commentId });
+//       res.status(201).json({ msg: "Comment deleted" });
+//     } else {
+//       res.status(204).json({ msg: "Comment not found" });
+//     }
+//   } catch (e) {
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
 
 // _____________DEFAULT ERROR ROUTE_____________________
 

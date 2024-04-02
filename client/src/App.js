@@ -14,14 +14,29 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import BottomBar from "./components/bottomBar/BottomBar";
 import "./App.css";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  disconnectSocket,
+  loadSocket,
+  loadUser,
+  updateOnlineUsers,
+} from "./redux/actions";
+import { io } from "socket.io-client";
 
 const App = () => {
+  const socket = useSelector((state) => state.chatReducers.socket);
+  const isMessengerOpen = useSelector(
+    (state) => state.chatReducers.isMessengerOpen
+  );
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [logInUser, setLogInUser] = useState();
+  const [logInUser, setLogInUser] = useState(null);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const user = useSelector((state) => state.userReducers.user);
 
   useEffect(() => {
-    const loadUser = async () => {
+    const loadCurrentUser = async () => {
       const res = await fetch("/user/loadUser", {
         method: "GET",
         headers: {
@@ -32,14 +47,37 @@ const App = () => {
       const data = await res.json();
       if (res.status === 200) {
         setLogInUser(data.user);
+        dispatch(loadUser(data.user));
         setIsAuthenticated(data.authenticated);
         navigate("/");
       } else {
+        dispatch(disconnectSocket());
         navigate("/login");
       }
     };
-    loadUser();
+    loadCurrentUser();
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const newSocket = io("http://localhost:8000");
+      dispatch(loadSocket(newSocket));
+      // setSocket(newSocket);
+    }
+  }, [isAuthenticated, dispatch]);
+
+  useEffect(() => {
+    if (socket === null) return;
+    socket.emit("addNewUser", user?._id);
+    socket.on("getOnlineUsers", (res) => {
+      dispatch(updateOnlineUsers(res));
+      // setOnlineUsers(res);
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, [socket, user, dispatch]);
 
   return (
     <div className=" sm:flex w-full">
@@ -59,8 +97,14 @@ const App = () => {
                 path="/search"
                 element={<Search logInUser={logInUser} />}
               />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/messenger" element={<Messenger />} />
+              <Route
+                path="/notifications"
+                element={<Notifications logInUser={logInUser} />}
+              />
+              <Route
+                path="/messenger"
+                element={<Messenger logInUser={logInUser} />}
+              />
               <Route
                 path="/create"
                 element={<Create logInUser={logInUser} />}
@@ -88,7 +132,11 @@ const App = () => {
               />
             </Routes>
           </div>
-          <div className="sm:hidden fixed bottom-0 z-20 w-full">
+          <div
+            className={`${
+              isMessengerOpen && "hidden"
+            } sm:hidden fixed bottom-0 z-20 w-full`}
+          >
             <BottomBar logInUser={logInUser} />
           </div>
         </>
